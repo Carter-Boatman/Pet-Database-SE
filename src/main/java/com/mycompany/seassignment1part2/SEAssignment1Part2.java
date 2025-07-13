@@ -30,6 +30,7 @@ public class SEAssignment1Part2 {
 
            switch (option) {
                 case 1 -> {
+                    /* Prints table of pets */
                     System.out.printf("+------------------------+\n");
                     System.out.printf("| %-3S | %-10S | %3s |\n", "ID", "NAME", "AGE");
                     System.out.printf("+------------------------+\n");
