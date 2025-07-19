@@ -1,7 +1,7 @@
 package com.mycompany.seassignment1part2;
 import java.util.ArrayList;
 import java.util.Scanner;
-//Release 3: Your program should allow for updating and removing pets. 
+import java.util.InputMismatchException;
 
 public class SEAssignment1Part2 {
     
@@ -20,11 +20,8 @@ public class SEAssignment1Part2 {
                            What would you like to do?
                            1) View all pets
                            2) Add more pets
-                           3) Update an existing pet
-                           4) Remove an existing pet
-                           5) Search pets by name
-                           6) Search pets by age
-                           7) Exit program
+                           3) Remove an existing pet
+                           4) Exit program
 
                            Your choice: """);
            // gets user choice
@@ -38,26 +35,43 @@ public class SEAssignment1Part2 {
                 case 2 -> {
                     /* Add pets loop */
                     int numPetsAdded = 0;
-                    
-                    while (done == false){
-                        System.out.print("add pet (name, age): ");
-                        String inputName = scnr.next();
-                        
-                        // if user is done, loop is exited
-                        if (inputName.equals("done")) {
-                            System.out.println(numPetsAdded + " pets added.");
-                            done = true;
-                            break;
+
+                    try {
+                        while (done == false) {
+
+                            // Checks to see if database is full (5 pets max)
+                            if (petArray.size() >= 5) {
+                                System.out.println("Maximum amount of 5 pets reached.");
+                                break;
+                            }
+
+                            System.out.print("add pet (name, age): ");
+                            String inputName = scnr.next();
+
+                            // if user is done, loop is exited
+                            if (inputName.equals("done")) {
+                                System.out.println(numPetsAdded + " pets added.");
+                                done = true;
+                                break;
+                            }
+
+                            int inputAge = scnr.nextInt();
+                            if (inputAge < 1 || inputAge > 20) {
+                                System.out.println("Invalid age: must be between 1 and 20 years old.");
+                                break;
+                            }
+
+                            petArray.add(new Pet(inputName, inputAge));
+                            numPetsAdded += 1;
                         }
-                        
-                        int inputAge = scnr.nextInt();
-                        petArray.add(new Pet(inputName, inputAge));
-                        numPetsAdded += 1;
+                    } catch (InputMismatchException e) {
+                        System.out.println("Invalid input: Must enter the name and age of the pet. (\"name, age\")");
+                        scnr.nextLine();
                     }
                     done = false; // boolean changed so the loop can be reentered
                 }
-                case 3 -> {
-                    /* Update an existing pet */
+                /*case 3 -> {
+                    /* Update an existing pet
                     displayPets(petArray); // Display all pets to show Id's available
                     System.out.print("Enter the pet ID you want to update: ");
                     int updateTargetId = scnr.nextInt();
@@ -66,29 +80,34 @@ public class SEAssignment1Part2 {
                     String newName = scnr.next();
                     int newAge = scnr.nextInt();
                     
-                    /* Performs update while informing user */
+                    /* Performs update while informing user
                     System.out.print(petArray.get(updateTargetId).name + " " + petArray.get(updateTargetId).age + " changed to ");
                     petArray.get(updateTargetId).setName(newName); // name is updated
                     petArray.get(updateTargetId).setAge(newAge); // age is updated
                     System.out.println(petArray.get(updateTargetId).name + " " + petArray.get(updateTargetId).age + ".");  
-                }
-                case 4 -> {
+                }*/
+                case 3 -> {
                     /* Remove an existing pet */
                     displayPets(petArray); // Display all pets to show Id's available
                     System.out.print("Enter the pet ID to remove: ");
-                    int removeTargetId = scnr.nextInt();
-                    
-                    /* Removes pet while informing user */
-                    System.out.print(petArray.get(removeTargetId).name + " " + petArray.get(removeTargetId).age);
-                    petArray.remove(removeTargetId); // pet is removed
-                    System.out.println(" is removed");
+                    try {
+                        int removeTargetId = scnr.nextInt();
+
+                        /* Removes pet while informing user */
+                        System.out.print(petArray.get(removeTargetId).name + " " + petArray.get(removeTargetId).age);
+                        petArray.remove(removeTargetId); // pet is removed
+                        System.out.println(" is removed");
+                    } catch (IndexOutOfBoundsException e) {
+                        System.out.println("Invalid ID: Does not match any existing pet ID.");
+                        scnr.nextLine();
+                    }
                 }
-                case 5 -> {
-                    /* Search pets by name */
+                /*case 5 -> {
+                    /* Search pets by name
                     System.out.print("Enter a name to search: ");
                     String searchName = scnr.next();
                     
-                    /* Prints table with pets having the searched name */
+                    /* Prints table with pets having the searched name
                     int rowCount = 0;
                     System.out.printf("+------------------------+\n");
                     System.out.printf("| %3S | %-10S | %3s |\n", "ID", "NAME", "AGE");
@@ -102,11 +121,11 @@ public class SEAssignment1Part2 {
                     System.out.println("+------------------------+\n" + rowCount + " rows in set.");
                 }
                 case 6 -> {
-                    /* Search pets by age */
+                    /* Search pets by age
                     System.out.print("Enter an age to search: ");
                     int searchAge = scnr.nextInt();
                     
-                    /* Prints table with pets having the searched age */
+                    /* Prints table with pets having the searched age
                     int rowCount = 0;
                     System.out.printf("+------------------------+\n");
                     System.out.printf("| %3S | %-10S | %3s |\n", "ID", "NAME", "AGE");
@@ -118,8 +137,8 @@ public class SEAssignment1Part2 {
                         }
                     }
                     System.out.println("+------------------------+\n" + rowCount + " rows in set.");
-                }
-                case 7 -> {
+                }*/
+                case 4 -> {
                     running = false;
                     System.out.println("Goodbye!");
                 }
