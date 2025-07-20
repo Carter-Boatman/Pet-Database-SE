@@ -1,4 +1,8 @@
 package com.mycompany.seassignment1part2;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.InputMismatchException;
@@ -11,7 +15,20 @@ public class SEAssignment1Part2 {
         boolean done = false;
         boolean running = true;
         int option;
-        
+
+        /* Pet data read in from file */
+        try {
+            File petFile = new File("PetList.txt");
+            Scanner fileScnr = new Scanner(petFile);
+            while (fileScnr.hasNext()) {
+                String dataName = fileScnr.next();
+                int dataAge = fileScnr.nextInt();
+                petArray.add(new Pet(dataName, dataAge));
+            }
+        } catch (FileNotFoundException e) {
+            System.out.println("File not found");
+        }
+
         /* Main menu */
         System.out.println("Pet Database Program.");
         while (running == true) {
@@ -68,6 +85,11 @@ public class SEAssignment1Part2 {
                         System.out.println("Invalid input: Must enter the name and age of the pet. (\"name, age\")");
                         scnr.nextLine();
                     }
+
+                    /* Changes written to the file (only if pets are added) */
+                    if (numPetsAdded != 0)
+                        updateFile(petArray);
+
                     done = false; // boolean changed so the loop can be reentered
                 }
                 /*case 3 -> {
@@ -88,7 +110,9 @@ public class SEAssignment1Part2 {
                 }*/
                 case 3 -> {
                     /* Remove an existing pet */
-                    displayPets(petArray); // Display all pets to show Id's available
+                    int numPetsRemoved = 0;
+
+                    displayPets(petArray); // Display all pets to show Ids available
                     System.out.print("Enter the pet ID to remove: ");
                     try {
                         int removeTargetId = scnr.nextInt();
@@ -97,10 +121,15 @@ public class SEAssignment1Part2 {
                         System.out.print(petArray.get(removeTargetId).name + " " + petArray.get(removeTargetId).age);
                         petArray.remove(removeTargetId); // pet is removed
                         System.out.println(" is removed");
+                        numPetsRemoved += 1;
                     } catch (IndexOutOfBoundsException e) {
                         System.out.println("Invalid ID: Does not match any existing pet ID.");
                         scnr.nextLine();
                     }
+
+                    /* Changes written to the file (only if pets are removed) */
+                    if (numPetsRemoved != 0)
+                        updateFile(petArray);
                 }
                 /*case 5 -> {
                     /* Search pets by name
@@ -159,5 +188,23 @@ public class SEAssignment1Part2 {
             rowCount += 1;
         }
         System.out.println("+------------------------+\n" + rowCount + " rows in set.");
+    }
+
+    /* Writes current pet database to the file */
+    public static void updateFile(ArrayList<Pet> petArray) {
+        try {
+            // Builds text for the file
+            String petArrayText = "";
+            for (Pet pet : petArray) {
+                petArrayText += pet.name + " " + pet.age + "\n";
+            }
+
+            // Text written to the file
+            FileWriter fileWriter = new FileWriter("PetList.txt");
+            fileWriter.write(petArrayText);
+            fileWriter.close();
+        } catch (IOException e) {
+            System.out.println("File not found");
+        }
     }
 }
